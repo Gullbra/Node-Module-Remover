@@ -4,6 +4,7 @@ try:
     from tkinter import *
     from tkinter import filedialog
     import tkinter.messagebox
+    import shutil
 except ImportError:
     print('Error: need python v. >= 3.5')  # use scandir PyPI module on Python < 3.5
     sys.exit()
@@ -30,16 +31,15 @@ def final_confirm(temp_arr, window):
         folders_to_rm[index].update(
             {"to_remove": str(not temp_arr[index].get())}
         )
-    print(folders_to_rm)
     if tkinter.messagebox.askyesno(
         title="Warning!",
         message="Deleted folders can't be retrieved. Are you sure?",
         icon="warning"
     ):
-        print("Deleting files...")
+        window.destroy()
     else:
-        print("Exiting program...")
-    window.destroy()
+        window.destroy()
+        sys.exit()
 
 
 def confirm_paths():
@@ -73,6 +73,22 @@ def confirm_paths():
     window.mainloop()
 
 
+def rm_folders():
+    try:
+        for path_dict in folders_to_rm:
+            if path_dict['to_remove'] == 'True':
+                shutil.rmtree(path_dict['path_obj'].path)
+        tkinter.messagebox.showinfo(
+            title="Successfully removed",
+            message="Modules successfully deleted."
+        )
+    except PermissionError:
+        tkinter.messagebox.showerror(
+            title="Insufficient permission",
+            message="Lacking permission to remove folder(s)."
+        )
+
+
 root_path = filedialog.askdirectory(
     initialdir='..\\',
     title="Select a root directory for search"
@@ -80,16 +96,11 @@ root_path = filedialog.askdirectory(
 root_search = sys.argv[1] if len(sys.argv) > 1 else 'node_modules'
 
 folders_to_rm = run_search(root_path)
+if len(folders_to_rm) == 0:
+    tkinter.messagebox.showinfo(
+        title="No matches",
+        message=f"No {root_search} folders was found in tree."
+    )
+    sys.exit()
 confirm_paths()
-
-
-
-
-
-
-"""
-for folder in folders_to_rm:
-    print(folder.path)
-"""
-print(folders_to_rm)
-
+rm_folders()
