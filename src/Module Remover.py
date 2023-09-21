@@ -21,6 +21,10 @@ if len(detected_dirs) == 0:
 
 directories_to_rm = GUI.confirm_paths(detected_dirs)
 
+if len(directories_to_rm) == 0:
+    tkinter.messagebox.showinfo(title="No removal", message=f"No directories removed!")
+    sys.exit()
+
 try:
     file_system.rm_folders(directories_to_rm)
     tkinter.messagebox.showinfo(title="Successfully removed", message="Modules successfully deleted.")

@@ -20,6 +20,7 @@ def confirm_paths(directories):
             window.destroy()
         else:
             window.destroy()
+            tkinter.messagebox.showinfo(title="No removal", message=f"No directories removed!")
             sys.exit()
 
     window = Tk()
